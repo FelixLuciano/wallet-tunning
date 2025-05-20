@@ -6,28 +6,28 @@ module Wallet
     , newWallet
     , newStockPricesHistory
     , validateWallet
-    , sharpeRatio
     , stockReturn
     , stockReturns
     , walletDalyReturns
     , walletYearlyMeanReturn
     , walletVolatility
-    , walletYearVolatility
+    , walletYearlyVolatility
+    , walletSharpeRatio
     ) where
 
 import Numeric.LinearAlgebra
 
-type AssetShare = Float
+type AssetShare = Double
 type Wallet = Vector AssetShare
 
-type StockPrice = Float
+type StockPrice = Double
 type StockPriceHistory = Vector StockPrice
 type StockPricesHistory = Matrix StockPrice
 
-type ReturnRate = Float
+type ReturnRate = Double
 type ReturnRateHistory = Vector ReturnRate
 
-newWallet :: [AssetShare] -> Wallet
+newWallet :: [Double] -> Wallet
 newWallet w = fromList w
 
 newStockPricesHistory :: [[StockPrice]] -> StockPricesHistory
@@ -42,9 +42,6 @@ validateWallet wallet = allSharesValid && totalSharesValid
     -- Check if the sum of all asset shares is equal to 100%
     totalSharesValid = sumElements wallet == 1.0
 
-sharpeRatio :: Float -> Float -> Float
-sharpeRatio riskReturn riskFreeRate = (riskReturn - riskFreeRate) / riskReturn
-
 stockReturn :: StockPriceHistory -> ReturnRateHistory
 stockReturn prices = currentPrice / previousPrice - 1.0
   where
@@ -52,38 +49,44 @@ stockReturn prices = currentPrice / previousPrice - 1.0
     currentPrice = prefixVector 1 $ subVector 1 n prices
     previousPrice = prefixVector 1 $ subVector 0 n prices
 
-stockReturns :: Matrix StockPrice -> Matrix ReturnRate
+stockReturns :: StockPricesHistory -> Matrix ReturnRate
 stockReturns prices = fromColumns $ map stockReturn $ toColumns prices
 
-walletDalyReturns :: Wallet -> Matrix StockPrice -> Vector ReturnRate
+walletDalyReturns :: Wallet -> StockPricesHistory -> Vector ReturnRate
 walletDalyReturns wallet prices = stockReturns prices #> wallet
 
-walletYearlyMeanReturn :: Wallet -> Matrix StockPrice -> ReturnRate
+walletYearlyMeanReturn :: Wallet -> StockPricesHistory -> ReturnRate
 walletYearlyMeanReturn wallet prices = (sqrt 252) * mean returns
   where
     returns = walletDalyReturns wallet prices
 
-stockPriceVolatility :: Vector StockPrice -> Vector Float
+stockPriceVolatility :: StockPriceHistory -> Vector Double
 stockPriceVolatility prices = prices - (scalar $ mean prices)
 
-stockPricesVolatility :: Matrix StockPrice -> Matrix Float
+stockPricesVolatility :: StockPricesHistory -> Matrix Double
 stockPricesVolatility prices = fromColumns $ map stockPriceVolatility $ toColumns prices
 
-walletVolatility :: Wallet -> Matrix StockPrice -> Float
+walletVolatility :: Wallet -> StockPricesHistory -> Double
 walletVolatility wallet prices = sqrt . sumElements $ wallet * sigma #> wallet
   where
     v = stockPricesVolatility prices
     n = fromIntegral (size wallet - 1)
     sigma = tr v Numeric.LinearAlgebra.<> v / n
 
-walletYearVolatility :: Wallet -> Matrix StockPrice -> Float
-walletYearVolatility wallet prices = (sqrt 252) * walletVolatility wallet prices
+walletYearlyVolatility :: Wallet -> StockPricesHistory -> Double
+walletYearlyVolatility wallet prices = (sqrt 252) * walletVolatility wallet prices
+
+walletSharpeRatio :: Wallet -> StockPricesHistory -> Double
+walletSharpeRatio wallet prices = return / volatility
+  where
+    return = walletYearlyMeanReturn wallet prices
+    volatility = walletYearlyVolatility wallet prices
 
 -- UTILS
 
 prefixVector x v = fromList (x : toList v)
 
-mean :: Vector Float -> Float
+mean :: Vector Double -> Double
 mean x = sumElements x / n
   where
     n = fromIntegral (size x - 1)
