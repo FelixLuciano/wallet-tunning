@@ -71,7 +71,4 @@ nix:
   packages:
   - haskellPackages.hmatrix
   - blas
-  # - haskellPackages.blas
-  # - haskellPackages.lapack
   - lapack
-  #   - hmatrix
