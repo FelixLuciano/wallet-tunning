@@ -10,9 +10,13 @@ import Wallet
     , walletVolatility
     )
 
+import RandomWallet
+    ( randomWallet
+    )
+
 main :: IO ()
 main = do
-    let myWallet = Wallet.newWallet [0.25, 0.25, 0.25, 0.25]
+    myWallet <- RandomWallet.randomWallet 4
     putStrLn $ "My wallet: " ++ show myWallet
 
     let isValid = validateWallet myWallet
