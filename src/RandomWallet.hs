@@ -9,16 +9,24 @@ import Wallet
     )
 
 import System.Random
-import System.Random.Shuffle
-import Numeric.LinearAlgebra
+    (randomRIO
+    )
 
+import System.Random.Shuffle
+    (shuffleM
+    )
+
+import Numeric.LinearAlgebra
+    ( scalar
+    , sumElements
+    )
 
 -- Built with the assistance of ChatGPT (GPT-4.1). Prompt:
 -- Generates an n-size list of floats where each value is randomly chosen between 0 and 0.2
 -- but does not exceed the remaining sum (starting from 1). The sum of the list is equal 1.
 -- At the end, the list is shuffled randomly to avoid any specific order.
-randomDpubleListN :: Int -> IO [Double]
-randomDpubleListN n = do
+randomDoubleListN :: Int -> IO [Double]
+randomDoubleListN n = do
     ll <- aux n 1 []
     shuffleM ll
     where
@@ -33,7 +41,7 @@ randomDpubleListN n = do
 
 randomWallet :: Int -> IO Wallet
 randomWallet n = do
-    randomShares <- randomDpubleListN n
+    randomShares <- randomDoubleListN n
     let wallet = newWallet randomShares
     let walletNormalized = wallet / scalar (sumElements wallet)
     if validateWallet walletNormalized
