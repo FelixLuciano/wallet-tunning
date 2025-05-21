@@ -16,6 +16,26 @@ module Wallet
     ) where
 
 import Numeric.LinearAlgebra
+  ( Matrix
+  , Vector
+  , fromColumns
+  , fromList
+  , fromLists
+  , scalar
+  , size
+  , subVector
+  , sumElements
+  , toColumns
+  , tr
+  , toList
+  , (<>)
+  , (#>)
+  )
+
+import Control.Parallel.Strategies
+  ( parMap
+  , rpar
+  )
 
 type AssetShare = Double
 type Wallet = Vector AssetShare
@@ -36,11 +56,8 @@ newStockPricesHistory p = fromLists p
 validateWallet :: Wallet -> Bool
 validateWallet wallet = allSharesValid && totalSharesValid
   where
-    -- Check if all asset shares are less than or equal to 20%
-    -- unless you have less than 5 assets, which makes impossible
     allSharesValid = size wallet < 5 || all (<= 0.2) (toList wallet)
-    -- Check if the sum of all asset shares is equal to 100%
-    totalSharesValid = sumElements wallet == 1.0
+    totalSharesValid = abs (sumElements wallet - 1.0) < 1e-9
 
 stockReturn :: StockPriceHistory -> ReturnRateHistory
 stockReturn prices = currentPrice / previousPrice - 1.0
@@ -50,7 +67,7 @@ stockReturn prices = currentPrice / previousPrice - 1.0
     previousPrice = prefixVector 1 $ subVector 0 n prices
 
 stockReturns :: StockPricesHistory -> Matrix ReturnRate
-stockReturns prices = fromColumns $ map stockReturn $ toColumns prices
+stockReturns prices = fromColumns $ parMap rpar stockReturn $ toColumns prices
 
 walletDalyReturns :: Wallet -> StockPricesHistory -> Vector ReturnRate
 walletDalyReturns wallet prices = stockReturns prices #> wallet
@@ -64,7 +81,7 @@ stockPriceVolatility :: StockPriceHistory -> Vector Double
 stockPriceVolatility prices = prices - (scalar $ mean prices)
 
 stockPricesVolatility :: StockPricesHistory -> Matrix Double
-stockPricesVolatility prices = fromColumns $ map stockPriceVolatility $ toColumns prices
+stockPricesVolatility prices = fromColumns $ parMap rpar stockPriceVolatility $ toColumns prices
 
 walletVolatility :: Wallet -> StockPricesHistory -> Double
 walletVolatility wallet prices = sqrt . sumElements $ wallet * sigma #> wallet
