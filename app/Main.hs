@@ -6,26 +6,31 @@ import Wallet
     , walletSharpeRatio
     )
 
-import RandomWallet
-    ( randomWallet
+import Tickers
+    ( getTickersSelection
     )
 
-import Numeric.LinearAlgebra
+import TickersIO
+    ( fromFileIO
+    )
+
+import WalletIO
+    ( readFilePricesHistory
+    )
+
+import WalletTune
+    ( tryMaxWalletSharpeRatio
+    )
 
 main :: IO ()
 main = do
-    myWallet <- RandomWallet.randomWallet 4
-    putStrLn $ "My wallet: " ++ show myWallet
+    myTickers <- TickersIO.fromFileIO "./data/index/US30-tickers.txt"
 
-    putStrLn $ "Walet assets Shares: " ++ show (sumElements myWallet)
+    let selections = getTickersSelection 25 myTickers
+    putStrLn $ "Amount of possible selections: " ++ show (length selections)
 
-    let isValid = validateWallet myWallet
-    putStrLn $ "Is the wallet valid? " ++ show isValid
+    prices <- readFilePricesHistory "./data/prices" (selections!!0)
 
-    let stockPrices = Wallet.newStockPricesHistory [ [100, 200, 300, 400],
-                                                     [105, 210, 310, 410],
-                                                     [110, 220, 320, 420]
-                                                   ]
-
-    let volatility = walletSharpeRatio myWallet stockPrices
-    putStrLn $ "Sharpe Ratio: " ++ show volatility
+    (myWallet, sharpeRation) <- tryMaxWalletSharpeRatio 1000 prices
+    putStrLn $ "Sharpe Ratio: " ++ show sharpeRation
+    putStrLn $ "Wallet: " ++ show myWallet
