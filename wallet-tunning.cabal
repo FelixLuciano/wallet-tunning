@@ -27,9 +27,9 @@ library
   exposed-modules:
       Tickers
       TickersIO
+      TunningIO
       Wallet
       WalletIO
-      WalletTune
   other-modules:
       Paths_wallet_tunning
   autogen-modules:
