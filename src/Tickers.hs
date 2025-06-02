@@ -1,12 +1,36 @@
 module Tickers
     ( Ticker
     , Tickers
-    , getTickersSelection
+    , StockPrice
+    , StockPriceHistory
+    , StockPricesHistory
+    , newStockPricesHistory
+    , getStocksSelection
     ) where
 
+import Numeric.LinearAlgebra
+    ( Vector
+    , Matrix
+    , toColumns
+    , fromColumns
+    , fromLists
+    , tr
+    )
+
+import Control.Parallel.Strategies
+    ( parMap
+    , rpar
+    )
 
 type Ticker = String
 type Tickers = [Ticker]
+
+type StockPrice = Double
+type StockPriceHistory = Vector StockPrice
+type StockPricesHistory = Matrix StockPrice
+
+newStockPricesHistory :: [[StockPrice]] -> StockPricesHistory
+newStockPricesHistory = tr . fromLists
 
 -- subsequences of length n from list performance
 -- From: https://stackoverflow.com/questions/21265454
@@ -19,5 +43,7 @@ subsequencesOfSize n xs = let l = length xs
         subsequencesBySize (x:xs) = let next = subsequencesBySize xs
                              in zipWith (++) ([]:next) (map (map (x:)) next ++ [[]])
 
-getTickersSelection :: Int -> Tickers -> [Tickers]
-getTickersSelection n tickers = subsequencesOfSize n tickers
+getStocksSelection :: Int -> Tickers -> StockPricesHistory -> [(Tickers, StockPricesHistory)]
+getStocksSelection n tickers prices =
+    let s = subsequencesOfSize n (zip tickers (toColumns prices))
+    in parMap rpar (\c -> (map fst c, fromColumns $ map snd c)) s

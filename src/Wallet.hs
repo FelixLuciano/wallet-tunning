@@ -1,13 +1,9 @@
 module Wallet
     ( AssetShare
     , Wallet
-    , StockPrice
-    , StockPriceHistory
-    , StockPricesHistory
     , ReturnRate
     , ReturnRateHistory
     , newWallet
-    , newStockPricesHistory
     , validateWallet
     , stockReturn
     , stockReturns
@@ -17,6 +13,12 @@ module Wallet
     , walletYearlyVolatility
     , walletSharpeRatio
     ) where
+
+import Tickers
+    ( StockPrice
+    , StockPriceHistory
+    , StockPricesHistory
+    )
 
 import Numeric.LinearAlgebra
     ( Matrix
@@ -43,18 +45,11 @@ import Control.Parallel.Strategies
 type AssetShare = Double
 type Wallet = Vector AssetShare
 
-type StockPrice = Double
-type StockPriceHistory = Vector StockPrice
-type StockPricesHistory = Matrix StockPrice
-
 type ReturnRate = Double
 type ReturnRateHistory = Vector ReturnRate
 
 newWallet :: [Double] -> Wallet
 newWallet w = fromList w
-
-newStockPricesHistory :: [[StockPrice]] -> StockPricesHistory
-newStockPricesHistory = tr . fromLists
 
 validateWallet :: Wallet -> Bool
 validateWallet wallet = allSharesValid && totalSharesValid

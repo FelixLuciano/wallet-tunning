@@ -1,16 +1,17 @@
 module WalletIO
-    ( readFilePriceList
-    , readFilePricesHistory
-    , randomWallet
+    ( randomWallet
     , randomWallets
     ) where
 
 import Wallet
     ( Wallet
-    , StockPrice
-    , StockPricesHistory
     , newWallet
     , validateWallet
+    )
+
+import Tickers
+    ( Tickers
+    , StockPriceHistory
     , newStockPricesHistory
     )
 
@@ -35,20 +36,6 @@ import Numeric.LinearAlgebra
     ( scalar
     , sumElements
     )
-
-
-readFilePriceList :: FilePath -> IO [StockPrice]
-readFilePriceList filePath = do
-    content <- readFile filePath
-    return $ parMap rpar read $ lines content
-
-readFilePricesHistory :: FilePath -> [String] -> IO StockPricesHistory
-readFilePricesHistory basePath tickers = do
-    histories <- mapM (\t -> readFilePriceList $ basePath ++ "/" ++ t ++ ".txt") tickers
-    let lens = map length histories
-    if all (== head lens) lens
-        then return $ newStockPricesHistory histories
-        else error $ "readFilePricesHistory: mismatched price history lengths: " ++ show (zip tickers lens)
 
 -- Built with the assistance of ChatGPT (GPT-4.1). Prompt:
 -- Generates an n-size list of floats where each value is randomly chosen between 0 and 0.2
