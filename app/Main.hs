@@ -1,36 +1,26 @@
 module Main (main) where
 
-import Wallet
-    ( newStockPricesHistory
-    , validateWallet
-    , walletSharpeRatio
-    )
-
 import Tickers
-    ( getTickersSelection
+    ( getStocksSelection
     )
 
 import TickersIO
-    ( fromFileIO
+    ( readFileTickers
+    , readFilePricesHistory
     )
 
-import WalletIO
-    ( readFilePricesHistory
-    )
-
-import WalletTune
-    ( tryMaxWalletSharpeRatio
+import TunningIO
+    ( tuneTickersIO
     )
 
 main :: IO ()
 main = do
-    myTickers <- TickersIO.fromFileIO "./data/index/US30-tickers.txt"
+    tickers <- TickersIO.readFileTickers "./data/index/US30-tickers.txt"
+    prices <- TickersIO.readFilePricesHistory "./data/prices" tickers
 
-    let selections = getTickersSelection 25 myTickers
+    let selections = getStocksSelection 2 tickers prices
     putStrLn $ "Amount of possible selections: " ++ show (length selections)
 
-    prices <- readFilePricesHistory "./data/prices" (selections!!0)
-
-    (myWallet, sharpeRation) <- tryMaxWalletSharpeRatio 1000 prices
-    putStrLn $ "Sharpe Ratio: " ++ show sharpeRation
+    (myWallet, sharpeRatio) <- TunningIO.tuneTickersIO 100 selections
+    putStrLn $ "Sharpe Ratio: " ++ show sharpeRatio
     putStrLn $ "Wallet: " ++ show myWallet
