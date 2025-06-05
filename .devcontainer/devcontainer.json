@@ -6,6 +6,7 @@
 	"image": "mcr.microsoft.com/devcontainers/base:alpine-3.20",
 	"features": {
 		"ghcr.io/devcontainers/features/nix:1": {
+			"multiUser": true,
 			"version": "2.11"
 		},
 		"ghcr.io/devcontainers-extra/features/haskell:2": {
@@ -14,8 +15,8 @@
 			"installStack": true,
 			"installStackGHCupHook": true,
 			"adjustBash": true,
-			"ghcVersion": "recommended",
-			"cabalVersion": "recommended",
+			"ghcVersion": "9.4.2",
+			"cabalVersion": "3.8.1.0",
 			"globalPackages": "",
 			"globalLibraries": ""
 		}

@@ -25,11 +25,11 @@ source-repository head
 
 library
   exposed-modules:
+      RandomWallet
       Tickers
       TickersIO
-      TunningIO
+      Tunning
       Wallet
-      WalletIO
   other-modules:
       Paths_wallet_tunning
   autogen-modules:
@@ -38,11 +38,14 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
-    , hmatrix
-    , parallel
-    , random
-    , random-shuffle
+      async ==2.2.5
+    , base >=4.7 && <5
+    , deepseq ==1.5.1.0
+    , hmatrix ==0.20.2
+    , parallel ==3.2.2.0
+    , random ==1.2.1.3
+    , random-shuffle ==0.0.4
+    , time ==1.12.2
   default-language: Haskell2010
 
 executable wallet-tunning-exe
@@ -55,11 +58,14 @@ executable wallet-tunning-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , hmatrix
-    , parallel
-    , random
-    , random-shuffle
+      async ==2.2.5
+    , base >=4.7 && <5
+    , deepseq ==1.5.1.0
+    , hmatrix ==0.20.2
+    , parallel ==3.2.2.0
+    , random ==1.2.1.3
+    , random-shuffle ==0.0.4
+    , time ==1.12.2
     , wallet-tunning
   default-language: Haskell2010
 
@@ -74,10 +80,13 @@ test-suite wallet-tunning-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
-    , hmatrix
-    , parallel
-    , random
-    , random-shuffle
+      async ==2.2.5
+    , base >=4.7 && <5
+    , deepseq ==1.5.1.0
+    , hmatrix ==0.20.2
+    , parallel ==3.2.2.0
+    , random ==1.2.1.3
+    , random-shuffle ==0.0.4
+    , time ==1.12.2
     , wallet-tunning
   default-language: Haskell2010
