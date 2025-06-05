@@ -58,11 +58,9 @@ validateWallet wallet = allSharesValid && totalSharesValid
         totalSharesValid = abs (sumElements wallet - 1.0) < 1e-9
 
 stockReturn :: StockPriceHistory -> ReturnRateHistory
-stockReturn prices = currentPrice / previousPrice - 1.0
+stockReturn prices = (subVector 1 n prices) / (subVector 0 n prices) - 1.0
     where
         n = size prices - 1
-        currentPrice = prefixVector 1 $ subVector 1 n prices
-        previousPrice = prefixVector 1 $ subVector 0 n prices
 
 stockReturns :: StockPricesHistory -> Matrix ReturnRate
 stockReturns prices = fromColumns $ parMap rpar stockReturn $ toColumns prices
