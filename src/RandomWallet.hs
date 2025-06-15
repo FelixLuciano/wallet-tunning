@@ -44,13 +44,15 @@ randomDoubleListN n seed
     | n <= 0 = []
     | otherwise =
         let gen = mkStdGen seed
-        in shuffle' (aux n 1 [] gen) n gen
+            shuffled = shuffle' (aux n 1 [] gen) n gen
+            norm = sum shuffled
+        in map (/ norm) shuffled
         where
             aux 1 x xs _ = x : xs
             aux k y xs gen =
                 let maxVal = min 0.2 y
-                    (x, gen') = randomR (0.001, maxVal) gen
-                in aux (k - 1) (y - x) (x : xs) gen'
+                    (x, gen') = randomR (0.0, maxVal) gen
+                in aux (k - 1) (y - x) (0.001 + x : xs) gen'
 
 randomWallet :: Int -> Int -> Wallet
 randomWallet n seed =
