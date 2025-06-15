@@ -7,6 +7,8 @@
 
 A delightful, high-performance Haskell app for portfolio optimization using Modern Portfolio Theory (MPT).
 
+Read more about this project at the [#1 Issue](https://github.com/FelixLuciano/wallet-tunning/issues/1).
+
 ## Features
 - **Randomized portfolio optimization**: Finds the optimal wallet by generating random asset weights and maximizing the Sharpe Ratio.
 - **Blazing fast**: Binds to low-level BLAS and LAPACK linear algebra libraries for maximum performance.
