@@ -1,3 +1,5 @@
+[Raul Ikeda Gomes da Silva](http://lattes.cnpq.br/5935139039430914). Functional Programming. [Insper](https://github.com/Insper), 2025.
+
 # Wallet Tunning
 
 > [!CAUTION]
@@ -5,14 +7,14 @@
 
 A delightful, high-performance Haskell app for portfolio optimization using Modern Portfolio Theory (MPT).
 
-## It Features
+## Features
 - **Randomized portfolio optimization**: Finds the optimal wallet by generating random asset weights and maximizing the Sharpe Ratio.
 - **Blazing fast**: Binds to low-level BLAS and LAPACK linear algebra libraries for maximum performance.
 - **Rich data**: Includes tickers for both the US30 and S&P500 indexes out of the box.
 - **Open data fetching**: Python script fetches historical prices from Yahoo Finance (via `yfinance`).
 - **Heuristic search**: Uses randomization-based optimization to explore the space of possible portfolios.
 
-## 🏦 How it works
+## How it works
 - Selects all subsets of assets from a tickers list. Eg.: 25 assets out of US30, which takes 142.506 possible combinations.
 - Generates a bunch of random portfolios (wallets) with constraints:
   - No asset has zero weight
@@ -21,7 +23,7 @@ A delightful, high-performance Haskell app for portfolio optimization using Mode
 - Evaluates each wallet's Sharpe Ratio using historical price data.
 - Reports the best wallet found.
 
-## 📦 Quickstart
+## Getting started
 
 ### 1. Fetch price data
 
@@ -53,12 +55,12 @@ stack run
 > [!NOTE]
 > For large datasets, this might take a while....
 
-## 📁 Project structure
+## Project structure
 - `data/` — Data scripts, tickers, and price files
-- `data/index/SP500-tickers.txt` — S&P500 tickers
-- `data/index/US30-tickers.txt` — US30 tickers
-- `data/download.py` — Python script to fetch prices from Yahoo Finance
-- `data/pull.sh` — Bash script to fetch all tickers in bulk
+  - `index/SP500-tickers.txt` — S&P500 tickers
+  - `index/US30-tickers.txt` — US30 tickers
+  - `download.py` — Python script to fetch prices from Yahoo Finance
+  - `pull.sh` — Bash script to fetch all tickers in bulk
 - `app/Main.hs` — Main entry point, you can edit it to set your index list, subset size and number of random tries per combination
 - `src/` — Haskell source code (portfolio logic, optimization, etc.)
 
