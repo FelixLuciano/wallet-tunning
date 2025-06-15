@@ -32,6 +32,15 @@ import Control.Exception
     ( bracket_
     )
 
+import Numeric
+    ( showFFloat
+    )
+
+
+import Numeric.LinearAlgebra
+    ( toList
+    )
+
 mainSeed :: Int
 mainSeed = 24
 
@@ -40,7 +49,7 @@ main = do
     tickers <- TickersIO.readFileTickers "./data/index/US30-tickers.txt"
     prices <- TickersIO.readFilePricesHistory "./data/prices" tickers
 
-    let selections = getStocksSelection 3 tickers prices
+    let selections = getStocksSelection 25 tickers prices
     let size = length selections
     putStrLn $ "Amount of possible selections: " ++ show size
 
@@ -53,8 +62,13 @@ main = do
     endTime <- getPOSIXTime
 
     let elapsed = round (endTime - startTime) :: Integer
+    let weights = toList myWallet
 
     putStrLn $ "Elapsed time: " ++ show elapsed ++ " s"
-    putStrLn $ "Sharpe Ratio: " ++ show sharpeRatio
-    putStrLn $ "Tickers: " ++ show myTickers
-    putStrLn $ "Wallet: " ++ show myWallet
+    putStrLn $ "Sharpe Ratio: " ++ Numeric.showFFloat (Just 5) sharpeRatio ""
+
+    putStrLn "Weights:"
+    mapM_ (\(t, w) -> putStrLn $ "- " ++ t ++ ": " ++ showD (w * 100) ++ "%") $ zip myTickers weights
+
+    where
+        showD d = Numeric.showFFloat (Just 2) d ""
