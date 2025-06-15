@@ -74,7 +74,7 @@ walletYearlyMeanReturn wallet prices = (sqrt 252) * mean returns
         returns = walletDalyReturns wallet prices
 
 stockPriceVolatility :: StockPriceHistory -> Vector Double
-stockPriceVolatility prices = prices - (scalar $ mean prices)
+stockPriceVolatility prices = prices - scalar (mean prices)
 
 stockPricesVolatility :: StockPricesHistory -> Matrix Double
 stockPricesVolatility prices = fromColumns $ parMap rpar stockPriceVolatility $ toColumns prices
@@ -96,8 +96,6 @@ walletSharpeRatio wallet prices = return / volatility
         volatility = walletYearlyVolatility wallet prices
 
 -- UTILS
-
-prefixVector x v = fromList (x : toList v)
 
 mean :: Vector Double -> Double
 mean x = sumElements x / n
